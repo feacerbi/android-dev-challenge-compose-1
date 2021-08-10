@@ -51,7 +51,7 @@ fun WideItem(
 fun SampleDataPreview() {
     MyTheme {
         LazyRow(content = {
-            val generatedNumbers = generateNumbers(10)
+            val generatedNumbers = generateNumbers(100)
             items(generatedNumbers) { item ->
 //                WideItem(pageNumber = item)
                 NarrowItem(pageNumber = item)
