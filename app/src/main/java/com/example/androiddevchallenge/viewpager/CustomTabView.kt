@@ -4,29 +4,45 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.ui.theme.activeTabBackgroundColor
 import com.example.androiddevchallenge.ui.theme.activeTabTextColor
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 
+@ExperimentalPagerApi
 @Composable
-fun WeekViewPager() {
-    var index by remember { mutableStateOf(0) }
+fun CustomTabView(state: PagerState) {
 
     ScrollableTabRow(
-        selectedTabIndex = index,
+        selectedTabIndex = state.currentPage,
         edgePadding = 16.dp,
-        backgroundColor = Color.White
+        backgroundColor = Color.White,
+        indicator = { tabPositions ->
+            Box(modifier = Modifier
+                .tabIndicatorOffset(tabPositions[state.currentPage])
+                .fillMaxSize()
+                .padding(top = 8.dp, start = 4.dp, end = 4.dp)
+                .background(Color.Transparent)
+                .border(width = 2.dp, color = activeTabTextColor, shape = RoundedCornerShape(4.dp))
+            )
+        }
     ) {
-        for (i in 0..4) {
-            Tab(selected = index == i, onClick = {
-              index = i
+        for (i in 0 until state.pageCount) {
+            Tab(selected = state.currentPage == i, onClick = {
+                //state.currentPage = i
             }) {
                 ActiveTab()
             }
@@ -68,6 +84,28 @@ fun ActiveTab() {
         }
 }
 
+@ExperimentalPagerApi
+@Composable
+fun MainScreen(){
+    val pagerState = rememberPagerState(
+        pageCount = 10,
+        initialOffscreenLimit = 2,
+    )
+    Column(modifier = Modifier.fillMaxSize()) {
+        CustomTabView(pagerState)
+        CustomViewPager(pagerState = pagerState)
+    }
+    
+}
+
+@ExperimentalPagerApi
+@Composable
+fun CustomViewPager(pagerState: PagerState){
+    HorizontalPager(state = pagerState) {
+        SampleScreen(pageNumber = pagerState.currentPage)
+    }
+}
+
 @Composable
 fun SampleScreen(pageNumber: Int) {
     Box(
@@ -87,8 +125,9 @@ fun SampleScreen(pageNumber: Int) {
     }
 }
 
+@ExperimentalPagerApi
 @Preview
 @Composable
 fun Preview() {
-    WeekViewPager()
+    MainScreen()
 }
