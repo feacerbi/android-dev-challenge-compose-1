@@ -21,10 +21,13 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
 
 @ExperimentalPagerApi
 @Composable
 fun CustomTabView(state: PagerState) {
+
+    val scope = rememberCoroutineScope()
 
     ScrollableTabRow(
         selectedTabIndex = state.currentPage,
@@ -42,7 +45,7 @@ fun CustomTabView(state: PagerState) {
     ) {
         for (i in 0 until state.pageCount) {
             Tab(selected = state.currentPage == i, onClick = {
-                //state.currentPage = i
+                scope.launch { state.animateScrollToPage(i) }
             }) {
                 ActiveTab()
             }
